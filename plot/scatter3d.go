@@ -15,11 +15,11 @@ const port = ":8080"
 const url = "http://localhost" + port
 
 func jsonifyMap(input map[string]any) string {
-	jsonString, err := json.MarshalIndent(input, " ", " ")
+	jsonByte, err := json.MarshalIndent(input, " ", " ")
 	if err != nil {
 		log.Fatal(err)
 	}
-	return string(jsonString)
+	return string(jsonByte)
 }
 
 // take in x, y, and z coordinates as slices of float64s
