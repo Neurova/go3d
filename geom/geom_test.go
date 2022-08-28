@@ -93,6 +93,3 @@ func TestNormalize(t *testing.T) {
 	}
 
 }
-
-// 5.91 row 1 mangnitude
-// .169 + .507 +
