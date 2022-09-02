@@ -93,3 +93,44 @@ func normalize(m *mat.Dense) *mat.Dense {
 
 	return norm
 }
+
+
+// Finds the cross product between two single or stacked vectors
+func cross(a *mat.Dense, b *mat.Dense) *mat.Dense {
+
+	if a.IsEmpty() {
+		panic(mat.ErrZeroLength)
+	}
+
+	if b.IsEmpty() {
+		panic(mat.ErrZeroLength)
+	}
+
+	a_r, a_c := a.Dims()
+	b_r, b_c := b.Dims()
+
+	if a_r != b_r {
+		panic(mat.ErrRowLength)
+	}
+
+	if a_c != b_c {
+		panic(mat.ErrColLength)
+	}
+
+	m := mat.NewDense(a_r, a_c, nil) // can chose either a or b since they are required to be the same shape
+
+	for i := 0; i <= a_r-1; i++ {
+		var rowA mat.Vector = a.RowView(i)
+		var rowB mat.Vector = b.RowView(i)
+
+		var crossRow = make([]float64, a_c)
+
+		crossRow[0] = rowA.AtVec(1)*rowB.AtVec(2) - rowA.AtVec(2)*rowB.AtVec(1)
+		crossRow[1] = rowA.AtVec(2)*rowB.AtVec(0) - rowA.AtVec(0)*rowB.AtVec(2)
+		crossRow[2] = rowA.AtVec(0)*rowB.AtVec(1) - rowA.AtVec(1)*rowB.AtVec(0)
+
+		m.SetRow(i, crossRow)
+	}
+
+	return m
+}
