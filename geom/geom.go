@@ -3,12 +3,55 @@
 package geom
 
 import (
+	"fmt"
+	"math"
+
 	"gonum.org/v1/gonum/mat"
 )
 
+// This should probably be moved to a helpers package
+// func intIsIn(list []int, item int) bool {
+// 	for _, a := range list {
+// 		if a == item {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
+
+// func floatIsIn(list []float64, item float64) bool {
+// 	for _, a := range list {
+// 		if a == item {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
+
+func stringIsIn(list []string, item string) bool {
+	for _, a := range list {
+		if a == item {
+			return true
+		}
+	}
+	return false
+}
+
+// convert radians to degrees
+func toDegrees(a []float64) []float64 {
+
+	var degrees = make([]float64, len(a))
+
+	for i, v := range a {
+		degrees[i] = v * 180 / math.Pi
+	}
+
+	return degrees
+}
+
 // magnitude function takes the rowwise euclidean distance of 2D or 3D points
 // or vectors
-func magnitude(m *mat.Dense) []float64 {
+func Magnitude(m *mat.Dense) []float64 {
 
 	if m.IsEmpty() {
 		panic(mat.ErrZeroLength)
@@ -44,7 +87,7 @@ func magnitude(m *mat.Dense) []float64 {
 
 // normalize function applies rowwise normalization of 2D or 3D data
 // to magnatiude 1
-func normalize(m *mat.Dense) *mat.Dense {
+func Normalize(m *mat.Dense) *mat.Dense {
 
 	if m.IsEmpty() {
 		panic(mat.ErrZeroLength)
@@ -57,7 +100,7 @@ func normalize(m *mat.Dense) *mat.Dense {
 	// return variable with the same shape as m
 	norm := mat.NewDense(r, c, nil)
 
-	var mag []float64 = magnitude(m)
+	var mag []float64 = Magnitude(m)
 
 	if r == 1 {
 
@@ -94,9 +137,8 @@ func normalize(m *mat.Dense) *mat.Dense {
 	return norm
 }
 
-
 // Finds the cross product between two single or stacked vectors
-func cross(a *mat.Dense, b *mat.Dense) *mat.Dense {
+func Cross(a *mat.Dense, b *mat.Dense) *mat.Dense {
 
 	if a.IsEmpty() {
 		panic(mat.ErrZeroLength)
@@ -110,11 +152,11 @@ func cross(a *mat.Dense, b *mat.Dense) *mat.Dense {
 	b_r, b_c := b.Dims()
 
 	if a_r != b_r {
-		panic(mat.ErrRowLength)
+		panic(mat.ErrShape)
 	}
 
 	if a_c != b_c {
-		panic(mat.ErrColLength)
+		panic(mat.ErrShape)
 	}
 
 	m := mat.NewDense(a_r, a_c, nil) // can chose either a or b since they are required to be the same shape
@@ -133,4 +175,81 @@ func cross(a *mat.Dense, b *mat.Dense) *mat.Dense {
 	}
 
 	return m
+}
+
+// Find the angle between 2 vectors
+func Angle(m1 *mat.Dense, m2 *mat.Dense, units string, is_normalized bool) []float64 {
+
+	var approvedUnits = []string{"deg", "degrees", "rad", "radians"}
+	var degUnits = []string{"deg", "degrees"}
+	var mOneNorm *mat.Dense
+	var mTwoNorm *mat.Dense
+
+	if m1.IsEmpty() {
+		panic(mat.ErrZeroLength)
+	}
+
+	if m2.IsEmpty() {
+		panic(mat.ErrZeroLength)
+	}
+
+	m1_r, m1_c := m1.Dims()
+	m2_r, m2_c := m2.Dims()
+
+	if m1_r != m2_r {
+		panic(mat.ErrShape)
+	}
+
+	if m1_c != m2_c {
+		panic(mat.ErrShape)
+	}
+
+	if !stringIsIn(approvedUnits, units) {
+		fmt.Printf("unexpected value for units: got: %v  wanted either: %v", units, approvedUnits)
+	}
+
+	var dot = make([]float64, m1_r)
+	var angles = make([]float64, m1_r)
+
+	if is_normalized {
+
+		mOneNorm = m1
+		mTwoNorm = m2
+
+	} else {
+		mOneNorm = Normalize(m1)
+		mTwoNorm = Normalize(m2)
+	}
+
+	if m1_r == 1 {
+
+		rowM1 := mOneNorm.RowView(0)
+		rowM2 := mTwoNorm.RowView(0)
+
+		dot[0] = mat.Dot(rowM1, rowM2)
+
+	} else {
+
+		for i := 0; i < m1_r; i++ {
+			fmt.Print(i)
+			rowM1 := mOneNorm.RowView(i)
+			rowM2 := mTwoNorm.RowView(i)
+
+			dot[i] = mat.Dot(rowM1, rowM2)
+		}
+	}
+
+	for i, v := range dot {
+
+		angles[i] = math.Acos(math.Min(math.Max(v, -1), 1))
+	}
+
+	if stringIsIn(degUnits, units) {
+
+		angles = toDegrees(angles)
+
+	}
+
+	return angles
+
 }

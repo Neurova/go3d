@@ -26,14 +26,13 @@ func TestMagnitude(t *testing.T) {
 	ss0 := math.Round(math.Sqrt(x[0]*x[0]+y[0]*y[0]+z[0]*z[0])*dig) / dig
 	ss1 := math.Round(math.Sqrt(x[1]*x[1]+y[1]*y[1]+z[1]*z[1])*dig) / dig
 
-
 	a := mat.NewDense(rows, cols, nil)
 
 	a.SetCol(0, x)
 	a.SetCol(1, y)
 	a.SetCol(2, z)
 
-	mag := magnitude(a)
+	mag := Magnitude(a)
 
 	if len(mag) != 2 {
 		t.Errorf("unexpected length of magnitude: got: %d  want: 2", len(mag))
@@ -66,10 +65,10 @@ func TestNormalize(t *testing.T) {
 	a.SetCol(1, y)
 	a.SetCol(2, z)
 
-	normA := normalize(a)
+	normA := Normalize(a)
 
 	fmt.Println("A", a)
-	fmt.Println("Magnitude A", magnitude(a))
+	fmt.Println("Magnitude A", Magnitude(a))
 	fmt.Println("Normalized A", normA)
 
 	var rowOneMag float64
@@ -101,7 +100,6 @@ func TestNormalize(t *testing.T) {
 
 }
 
-
 func TestCross(t *testing.T) {
 
 	t.Parallel()
@@ -130,7 +128,7 @@ func TestCross(t *testing.T) {
 	b.SetCol(1, y2)
 	b.SetCol(2, z2)
 
-	crossProduct := cross(a, b)
+	crossProduct := Cross(a, b)
 
 	fmt.Println(crossProduct)
 
@@ -159,3 +157,56 @@ func TestCross(t *testing.T) {
 	}
 }
 
+func TestAngle(t *testing.T) {
+
+	t.Parallel()
+
+	// Precision test of 4
+	const dig = 10000
+
+	const cols int = 3
+	const rows int = 2
+	const angleOneProof float64 = 0
+	const angleTwoProof float64 = 4.3066
+
+	x1 := []float64{1, 2}
+	y1 := []float64{3, 4}
+	z1 := []float64{5, 6}
+
+	x2 := []float64{1, 2}
+	y2 := []float64{3, 3}
+	z2 := []float64{5, 5}
+
+	a := mat.NewDense(rows, cols, nil)
+	b := mat.NewDense(rows, cols, nil)
+
+	a.SetCol(0, x1)
+	a.SetCol(1, y1)
+	a.SetCol(2, z1)
+
+	b.SetCol(0, x2)
+	b.SetCol(1, y2)
+	b.SetCol(2, z2)
+
+	aNorm := Normalize(a)
+	bNorm := Normalize(b)
+
+	anglesPostNorm := Angle(a, b, "deg", false)
+	anglesPreNorm := Angle(aNorm, bNorm, "deg", true)
+
+	if anglesPostNorm[0] != anglesPreNorm[0] {
+		t.Errorf("unexpected difference between pre and post normalized matrices in row one")
+	}
+
+	if math.Round(anglesPostNorm[1]*dig)/dig != math.Round(anglesPreNorm[1]*dig)/dig {
+		t.Errorf("unexpected difference between pre and post normalized matrices in row two")
+	}
+
+	if anglesPostNorm[0] != angleOneProof {
+		t.Errorf("unexoected angle for row one:  got %v  wanted: %v", anglesPostNorm[0], angleOneProof)
+	}
+
+	if math.Round(anglesPostNorm[1]*dig)/dig != angleTwoProof {
+		t.Errorf("unexoected angle for row one:  got %v  wanted: %v", anglesPostNorm[1], angleTwoProof)
+	}
+}
