@@ -26,7 +26,9 @@ func TestMagnitude(t *testing.T) {
 	ss0 := math.Round(math.Sqrt(x[0]*x[0]+y[0]*y[0]+z[0]*z[0])*dig) / dig
 	ss1 := math.Round(math.Sqrt(x[1]*x[1]+y[1]*y[1]+z[1]*z[1])*dig) / dig
 
+
 	a := mat.NewDense(rows, cols, nil)
+
 	a.SetCol(0, x)
 	a.SetCol(1, y)
 	a.SetCol(2, z)
@@ -99,6 +101,7 @@ func TestNormalize(t *testing.T) {
 
 }
 
+
 func TestCross(t *testing.T) {
 
 	t.Parallel()
@@ -155,3 +158,4 @@ func TestCross(t *testing.T) {
 		t.Errorf("unexpected sum of row two values:  got: %f  wanted: %f", rowTwoSum, rowTwoProof)
 	}
 }
+

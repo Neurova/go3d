@@ -94,6 +94,7 @@ func normalize(m *mat.Dense) *mat.Dense {
 	return norm
 }
 
+
 // Finds the cross product between two single or stacked vectors
 func cross(a *mat.Dense, b *mat.Dense) *mat.Dense {
 
