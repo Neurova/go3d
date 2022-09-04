@@ -253,3 +253,121 @@ func Angle(m1 *mat.Dense, m2 *mat.Dense, units string, is_normalized bool) []flo
 	return angles
 
 }
+
+// computes the scalar needed to project m1 onto m2
+func ScalarProjection(m1 *mat.Dense, m2 *mat.Dense, normalized bool) []float64 {
+
+	if m1.IsEmpty() {
+		panic(mat.ErrZeroLength)
+	}
+
+	if m2.IsEmpty() {
+		panic(mat.ErrZeroLength)
+	}
+
+	m1_r, m1_c := m1.Dims()
+	m2_r, m2_c := m2.Dims()
+
+	if m1_r != m2_r {
+		panic(mat.ErrShape)
+	}
+
+	if m1_c != m2_c {
+		panic(mat.ErrShape)
+	}
+
+	var project = make([]float64, m1_r)
+	var mTwoNorm *mat.Dense
+
+	if normalized {
+		mTwoNorm = m2
+	} else {
+		mTwoNorm = Normalize(m2)
+	}
+
+	if m1_r == 1 {
+
+		v1 := m1.RowView(0)
+		v2 := mTwoNorm.RowView(0)
+
+		project[0] = mat.Dot(v1, v2)
+
+	} else {
+
+		for i := 0; i < m1_r; i++ {
+
+			v1 := m1.RowView(i)
+			v2 := mTwoNorm.RowView(i)
+
+			project[i] = mat.Dot(v1, v2)
+		}
+	}
+
+	return project
+}
+
+// projects vector(s) m1 onto vector(s) m2
+func ProjectVector(m1 *mat.Dense, m2 *mat.Dense, normalized bool) *mat.Dense {
+
+	if m1.IsEmpty() {
+		panic(mat.ErrZeroLength)
+	}
+
+	if m2.IsEmpty() {
+		panic(mat.ErrZeroLength)
+	}
+
+	m1_r, m1_c := m1.Dims()
+	m2_r, m2_c := m2.Dims()
+
+	if m1_r != m2_r {
+		panic(mat.ErrShape)
+	}
+
+	if m1_c != m2_c {
+		panic(mat.ErrShape)
+	}
+
+	mProject := mat.NewDense(m1_r, m1_c, nil)
+
+	var mTwoNorm *mat.Dense
+
+	if normalized {
+		mTwoNorm = m2
+	} else {
+		mTwoNorm = Normalize(m2)
+	}
+
+	scalar := ScalarProjection(m1, mTwoNorm, true)
+
+	if m1_r == 1 {
+
+		onto := mTwoNorm.RawRowView(0)
+
+		var proj = make([]float64, m1_c)
+
+		for i := 0; i < m1_c; i++ {
+			proj[i] = onto[i] * scalar[0]
+		}
+
+		mProject.SetRow(0, proj)
+
+	} else {
+
+		for i := 0; i < m1_r; i++ {
+
+			onto := mTwoNorm.RawRowView(i)
+
+			var proj = make([]float64, m1_c)
+
+			for ii := 0; ii < m1_c; ii++ {
+				proj[ii] = onto[ii] * scalar[i]
+			}
+
+			mProject.SetRow(i, proj)
+		}
+	}
+
+	return mProject
+
+}
