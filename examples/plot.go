@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"math"
@@ -6,7 +6,7 @@ import (
 	"github.com/neurova/go3d/plot"
 )
 
-func main() {
+func Scatter3dExample() {
 	// initialize slices of float64 for x, y, and z coordinates
 	x := []float64{}
 	y := []float64{}

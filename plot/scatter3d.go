@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 
-	// "github.com/neurova/go3d/templates"
 	"github.com/pkg/browser"
 )
 
