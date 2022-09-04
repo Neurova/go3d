@@ -67,9 +67,9 @@ func TestNormalize(t *testing.T) {
 
 	normA := Normalize(a)
 
-	fmt.Println("A", a)
-	fmt.Println("Magnitude A", Magnitude(a))
-	fmt.Println("Normalized A", normA)
+	fn := mat.Formatted(normA, mat.Prefix("    "), mat.Squeeze())
+
+	fmt.Println("Normalized A", fn)
 
 	var rowOneMag float64
 	var rowTwoMag float64
@@ -209,4 +209,97 @@ func TestAngle(t *testing.T) {
 	if math.Round(anglesPostNorm[1]*dig)/dig != angleTwoProof {
 		t.Errorf("unexoected angle for row one:  got %v  wanted: %v", anglesPostNorm[1], angleTwoProof)
 	}
+}
+
+func TestScalarProject(t *testing.T) {
+
+	t.Parallel()
+
+	const cols int = 3
+	const rows int = 2
+
+	x1 := []float64{7, 2}
+	y1 := []float64{3, 4}
+	z1 := []float64{5, 2}
+
+	x2 := []float64{1, 9}
+	y2 := []float64{3, 1}
+	z2 := []float64{5, 5}
+
+	a := mat.NewDense(rows, cols, nil)
+	b := mat.NewDense(rows, cols, nil)
+
+	a.SetCol(0, x1)
+	a.SetCol(1, y1)
+	a.SetCol(2, z1)
+
+	b.SetCol(0, x2)
+	b.SetCol(1, y2)
+	b.SetCol(2, z2)
+
+	bNorm := Normalize(b)
+
+	projection := ScalarProjection(a, b, false)
+
+	projectPreNorm := ScalarProjection(a, bNorm, true)
+
+	fmt.Println("Projection =", projection)
+
+	N := len(projection)
+
+	if N != rows {
+		t.Errorf("unexpected number of values returned:  got %v  wanted: %v", N, rows)
+	}
+
+	if projectPreNorm[0] != projection[0] {
+		t.Errorf("unexpected values for first scalar projection.  pre and post normalization not equal")
+	}
+
+	if projectPreNorm[1] != projection[1] {
+		t.Errorf("unexpected values for second scalar projection.  pre and post normalization not equal")
+	}
+}
+
+func TestVectorProject(t *testing.T) {
+
+	t.Parallel()
+
+	const cols int = 3
+	const rows int = 2
+
+	x1 := []float64{7, 2}
+	y1 := []float64{3, 4}
+	z1 := []float64{5, 2}
+
+	x2 := []float64{1, 9}
+	y2 := []float64{3, 1}
+	z2 := []float64{5, 5}
+
+	a := mat.NewDense(rows, cols, nil)
+	b := mat.NewDense(rows, cols, nil)
+
+	a.SetCol(0, x1)
+	a.SetCol(1, y1)
+	a.SetCol(2, z1)
+
+	b.SetCol(0, x2)
+	b.SetCol(1, y2)
+	b.SetCol(2, z2)
+
+	c := ProjectVector(a, b, false)
+
+	row, col := c.Dims()
+
+	fc := mat.Formatted(c, mat.Prefix("    "), mat.Squeeze())
+
+	fmt.Println("Projected Vectors = ", fc)
+
+	if row != rows {
+		t.Errorf("unexpected number of rows:  wanted: %v  got: %v", row, rows)
+	}
+
+	if col != cols {
+		t.Errorf("unexpected number of columns:  wanted: %v  got: %v", col, cols)
+	}
+
 }
