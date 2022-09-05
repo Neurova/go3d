@@ -6,38 +6,11 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/neurova/go3d/utils"
 	"gonum.org/v1/gonum/mat"
 )
 
 var approvedUnits = []string{"deg", "degrees", "rad", "radians"}
-
-// This should probably be moved to a helpers package
-// func intIsIn(list []int, item int) bool {
-// 	for _, a := range list {
-// 		if a == item {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func floatIsIn(list []float64, item float64) bool {
-// 	for _, a := range list {
-// 		if a == item {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-func stringIsIn(list []string, item string) bool {
-	for _, a := range list {
-		if a == item {
-			return true
-		}
-	}
-	return false
-}
 
 // convert radians to degrees
 func toDegrees(a []float64) []float64 {
@@ -218,7 +191,7 @@ func Angle(m1 *mat.Dense, m2 *mat.Dense, units string, is_normalized bool) []flo
 		panic(mat.ErrShape)
 	}
 
-	if !stringIsIn(approvedUnits, units) {
+	if !utils.IsIn(units, approvedUnits) {
 		fmt.Printf("unexpected value for units: got: %v  wanted either: %v", units, approvedUnits)
 	}
 
@@ -258,7 +231,7 @@ func Angle(m1 *mat.Dense, m2 *mat.Dense, units string, is_normalized bool) []flo
 		angles[i] = math.Acos(math.Min(math.Max(v, -1), 1))
 	}
 
-	if stringIsIn(degUnits, units) {
+	if utils.IsIn(units, degUnits) {
 
 		angles = toDegrees(angles)
 
@@ -408,11 +381,11 @@ func Rotate(m *mat.Dense, a *mat.Dense, angle float64, units string, normalized 
 		panic(mat.ErrShape)
 	}
 
-	if !stringIsIn(approvedUnits, units) {
+	if !utils.IsIn(units, approvedUnits) {
 		fmt.Printf("unexpected value for units: got: %v  wanted either: %v", units, approvedUnits)
 	}
 
-	if stringIsIn([]string{"degrees", "deg"}, units) {
+	if utils.IsIn(units, []string{"degrees", "deg"}) {
 		angle = angle * math.Pi / 180
 	}
 
