@@ -6,7 +6,6 @@ import (
 
 	"github.com/neurova/go3d/stats"
 	"github.com/neurova/go3d/utils"
-	"gonum.org/v1/gonum/mat"
 )
 
 func PDFExample() {
@@ -18,9 +17,9 @@ func PDFExample() {
 		i++
 	}
 
-	randomVector := mat.NewVecDense(len(randomData), randomData)
-	pdf := stats.PDF(randomVector)
-	fmt.Println("PDF values: ", pdf)
+	pdf, uniqueValues := stats.PDF(randomData)
+	fmt.Println("PDF values (y): ", pdf)
+	fmt.Println("Unique values (x): ", uniqueValues)
 	fmt.Println("Sum of values: ", utils.SumFloat64Slice(pdf))
 
 }

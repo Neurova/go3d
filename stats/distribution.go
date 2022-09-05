@@ -4,21 +4,21 @@ import (
 	"sort"
 
 	"github.com/neurova/go3d/utils"
-	"gonum.org/v1/gonum/mat"
 )
 
-func PDF(v mat.Vector) []float64 {
-	n := v.Len()
-	sortedValues := utils.VectorToSlice(v)
-	sort.Slice(sortedValues, func(i, j int) bool {
-		return sortedValues[i] < sortedValues[j]
+// returns probability, unique values
+func PDF(data []float64) ([]float64, []float64) {
+	n := len(data)
+	// data := utils.VectorToSlice(v)
+	sort.Slice(data, func(i, j int) bool {
+		return data[i] < data[j]
 	})
 
-	uniqueValues := utils.Unique(sortedValues)
-	pdf := []float64{}
+	uniqueValues := utils.Unique(data)
+	probability := []float64{}
 	for _, uniqueValue := range uniqueValues {
-		num := utils.NumOccurences(uniqueValue, sortedValues)
-		pdf = append(pdf, float64(num)/float64(n))
+		num := utils.NumOccurences(uniqueValue, data)
+		probability = append(probability, float64(num)/float64(n))
 	}
-	return pdf
+	return uniqueValues, probability
 }

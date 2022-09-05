@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"github.com/neurova/go3d/plot"
+	"github.com/neurova/go3d/stats"
 )
 
 func Scatter3dExample() {
@@ -20,4 +21,10 @@ func Scatter3dExample() {
 	}
 	// plot
 	plot.Scatter3d(x, y, z)
+}
+
+func PDFPlotExample() {
+	data := []float64{1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 5.0, 5.0, 5.0, 6.0}
+	values, probability := stats.PDF(data)
+	plot.PDF(values, probability)
 }

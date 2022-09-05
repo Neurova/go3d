@@ -1,8 +1,19 @@
 package utils
 
 import (
+	"encoding/json"
+	"log"
+
 	"gonum.org/v1/gonum/mat"
 )
+
+func Jsonify(input map[string]any) string {
+	jsonByte, err := json.MarshalIndent(input, " ", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(jsonByte)
+}
 
 func NumOccurences[T comparable](check T, slice []T) int {
 	var occurences int
