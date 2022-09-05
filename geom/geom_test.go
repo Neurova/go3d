@@ -303,3 +303,56 @@ func TestVectorProject(t *testing.T) {
 	}
 
 }
+
+func TestRotate(t *testing.T) {
+
+	t.Parallel()
+
+	// Precision test of 4
+	const dig = 10000
+	const cols int = 3
+	const rows int = 1
+
+	vCheck := []float64{1.3416, -0.0472, -1.0944}
+
+	x1 := []float64{1}
+	y1 := []float64{1}
+	z1 := []float64{1}
+
+	x2 := []float64{0}
+	y2 := []float64{2}
+	z2 := []float64{-1}
+
+	a := mat.NewDense(rows, cols, nil)
+	b := mat.NewDense(rows, cols, nil)
+
+	a.SetCol(0, x1)
+	a.SetCol(1, y1)
+	a.SetCol(2, z1)
+
+	b.SetCol(0, x2)
+	b.SetCol(1, y2)
+	b.SetCol(2, z2)
+
+	r := Rotate(a, b, 90.0, "deg", false)
+
+	fr := mat.Formatted(r, mat.Prefix("    "), mat.Squeeze())
+
+	fmt.Println("Rotated matrix = ", fr)
+
+	x := math.Round(r.At(0, 0)*dig) / dig
+	y := math.Round(r.At(0, 1)*dig) / dig
+	z := math.Round(r.At(0, 2)*dig) / dig
+
+	if x != vCheck[0] {
+		t.Errorf("unexpected value for x:  wanted: %v  got: %v", vCheck[0], x)
+	}
+
+	if y != vCheck[1] {
+		t.Errorf("unexpected value for y:  wanted: %v  got: %v", vCheck[1], y)
+	}
+
+	if z != vCheck[2] {
+		t.Errorf("unexpected value for x:  wanted: %v  got: %v", vCheck[2], z)
+	}
+}
