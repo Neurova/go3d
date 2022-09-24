@@ -14,7 +14,7 @@ func TestPDF(t *testing.T) {
 	expectedLen := len(utils.Unique(data))
 
 	values, probability := PDF(data)
-	probabilitySum := utils.SumFloat64Slice(probability)
+	probabilitySum := utils.SumSlice(probability)
 
 	if !reflect.DeepEqual(probability, expectedProbability) {
 		t.Errorf("TestPDF failed. Expected %v but recieved %v", expectedProbability, probability)
