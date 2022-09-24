@@ -1,4 +1,4 @@
-package examples
+package main
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/neurova/go3d/utils"
 )
 
-func PDFExample() {
+func main() {
 	randomData := []float64{}
 	var i int
 	for i < 50 {
