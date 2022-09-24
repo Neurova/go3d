@@ -106,7 +106,7 @@ func TestVectorToSlice(t *testing.T) {
 func TestSumFloat64Slice(t *testing.T) {
 	floatSlice := getFloatData()
 	expectedSum := getExpectedFloat64DataSum()
-	sum := SumFloat64Slice(floatSlice)
+	sum := SumSlice(floatSlice)
 
 	if !reflect.DeepEqual(sum, expectedSum) {
 		t.Errorf("TestSumFloat64Slice failed. Expected %v but recieved %v", expectedSum, sum)
@@ -116,7 +116,7 @@ func TestSumFloat64Slice(t *testing.T) {
 func TestSumIntSlice(t *testing.T) {
 	intSlice := getIntData()
 	expectedSum := getExpectedIntDataSum()
-	sum := SumIntSlice(intSlice)
+	sum := SumSlice(intSlice)
 
 	if !reflect.DeepEqual(sum, expectedSum) {
 		t.Errorf("TestSumIntSlice failed. Expected %v but recieved %v", expectedSum, sum)

@@ -1,18 +1,11 @@
 package utils
 
 import (
-	"encoding/json"
-	"log"
-
 	"gonum.org/v1/gonum/mat"
 )
 
-func Jsonify(input map[string]any) string {
-	jsonByte, err := json.MarshalIndent(input, " ", " ")
-	if err != nil {
-		log.Fatal(err)
-	}
-	return string(jsonByte)
+type Number interface {
+	int | float64
 }
 
 func NumOccurences[T comparable](check T, slice []T) int {
@@ -53,17 +46,9 @@ func VectorToSlice(v mat.Vector) []float64 {
 	return s
 }
 
-func SumIntSlice(slice []int) int {
-	var sum int
-	for _, value := range slice {
-		sum += value
-	}
-	return sum
-}
-
-func SumFloat64Slice(slice []float64) float64 {
-	var sum float64
-	for _, value := range slice {
+func SumSlice[T Number](s []T) T {
+	var sum T
+	for _, value := range s {
 		sum += value
 	}
 	return sum
